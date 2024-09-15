@@ -1,9 +1,11 @@
-import Navbar from "./Component/Navbar";
+import Layout from "./Layout/Layout";
+
 
 const App = () => {
   return (
     <div>
-     <Navbar/>
+      <Layout/>
+ 
     </div>
   );
 };

@@ -16,7 +16,7 @@ const Router = () => {
             <Route path="/card" element={<Card/>}/>
             <Route path="/contact" element={<Contact/>}/>
             <Route path="/login" element={<Login/>}/>
-            <Route path="/login" element={<SignUp/>}/>
+            <Route path="/signup" element={<SignUp/>}/>
         </Routes>
       
     </div>
