@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [showNavbar, setShowNavbar] = useState<boolean>(false);
+  const [showRegister,setShowRegister] = useState<boolean>(false)
 
   return (
     <div>
@@ -11,9 +12,9 @@ const Navbar = () => {
           {/* Logo Section */}
           <div className="logo flex justify-start md:col-span-3 col-span-6">
             <span>
-              <i className="ri-handbag-line text-[1.2em]"></i>
+              <i className="ri-handbag-line text-[1.4em]"></i>
             </span>
-            <h2 className="font-bold text-[1em] mt-1 mx-1">Multi-Yash</h2>
+            <h2 className="font-bold text-[1.1em] mt-1 mx-1">Multi-Yash</h2>
           </div>
 
           {/* Sidebar (Right Side) mobile */}
@@ -30,14 +31,14 @@ const Navbar = () => {
             </button>
             <ul className="space-y-4 text-center mt-16">
               <li>
-                <Link to="/" className="block py-2 hover:bg-gray-700 rounded">
+                <Link to="/" className="font-bold">
                   Home
                 </Link>
               </li>
               <li>
                 <Link
                   to="/about"
-                  className="block py-2 hover:bg-gray-700 rounded"
+                  className="font-bold"
                 >
                   About
                 </Link>
@@ -45,7 +46,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/shoppingCard"
-                  className="block py-2 hover:bg-gray-700 rounded"
+                  className="font-bold"
                 >
                   Services
                 </Link>
@@ -53,7 +54,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="block py-2 hover:bg-gray-700 rounded"
+                  className="font-bold"
                 >
                   Contact
                 </Link>
@@ -66,14 +67,14 @@ const Navbar = () => {
           <div className="md:col-span-6 hidden md:block">
             <ul className="flex space-x-3 justify-center">
               <li>
-                <Link to="/" className="block py-2 hover:bg-gray-700 rounded">
+                <Link to="/" className="font-bold">
                   Home
                 </Link>
               </li>
               <li>
                 <Link
                   to="/about"
-                  className="block py-2 hover:bg-gray-700 rounded"
+                  className="font-bold"
                 >
                   About
                 </Link>
@@ -81,7 +82,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/shoppingCard"
-                  className="block py-2 hover:bg-gray-700 rounded"
+                  className="font-bold"
                 >
                   Services
                 </Link>
@@ -89,7 +90,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="block py-2 hover:bg-gray-700 rounded"
+                  className="font-bold"
                 >
                   Contact
                 </Link>
@@ -99,7 +100,7 @@ const Navbar = () => {
 
           {/* Icons Section */}
           <div className="nav__icon flex space-x-2 justify-end col-span-6 md:col-span-3">
-            <div className="nav__shopping-card cursor-pointer relative">
+            <div className="nav__shopping-card cursor-pointer relative mx-2">
               {/* Shopping Cart Icon */}
               <i className="ri-shopping-cart-2-fill text-2xl"></i>
               {/* Counter on top of shopping cart */}
@@ -108,7 +109,18 @@ const Navbar = () => {
               </span>
             </div>
             <div className="nav__user-profile cursor-pointer">
+              <button onClick={() => setShowRegister(!showRegister)}
+                aria-label="Toggle register"
+                className="flex -space-x-2">
               <i className="ri-user-line text-2xl"></i>
+              <i className="ri-arrow-drop-down-fill text-2xl mt-2"></i>
+              </button>
+              {showRegister && <div className="bg-white rounded-sm shadow-lg absolute p-3">
+                <Link to='/login' onClick={() => setShowRegister(!showRegister) }>Login</Link><br></br>
+                <Link to='/signup' onClick={() => setShowRegister(!showRegister) }>Register</Link>
+                </div>}
+
+             
             </div>
             <div className="menu mt-1">
               {/* Toggle between menu and cross icons */}
@@ -116,7 +128,7 @@ const Navbar = () => {
                 onClick={() => setShowNavbar(!showNavbar)}
                 aria-label="Toggle menu"
               >
-                <i className="ri-menu-fill text-black text-[1.4em]"></i>
+                <i className="ri-menu-fill md:hidden text-black text-[1.4em]"></i>
               </button>
             </div>
           </div>
