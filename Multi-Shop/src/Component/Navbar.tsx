@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../AuthContext/AuthContexts";
 
 const Navbar = () => {
   const [showNavbar, setShowNavbar] = useState<boolean>(false);
-  const [showRegister,setShowRegister] = useState<boolean>(false)
+  const [showRegister, setShowRegister] = useState<boolean>(false);
+  const { logOut, user } = useAuth();
 
   return (
     <div>
@@ -36,26 +38,17 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/about"
-                  className="font-bold"
-                >
+                <Link to="/about" className="font-bold">
                   About
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/shoppingCard"
-                  className="font-bold"
-                >
+                <Link to="/shoppingCard" className="font-bold">
                   Services
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/contact"
-                  className="font-bold"
-                >
+                <Link to="/contact" className="font-bold">
                   Contact
                 </Link>
               </li>
@@ -72,26 +65,17 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/about"
-                  className="font-bold"
-                >
+                <Link to="/about" className="font-bold">
                   About
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/shoppingCard"
-                  className="font-bold"
-                >
+                <Link to="/shoppingCard" className="font-bold">
                   Services
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/contact"
-                  className="font-bold"
-                >
+                <Link to="/contact" className="font-bold">
                   Contact
                 </Link>
               </li>
@@ -109,18 +93,46 @@ const Navbar = () => {
               </span>
             </div>
             <div className="nav__user-profile cursor-pointer">
-              <button onClick={() => setShowRegister(!showRegister)}
+              <button
+                onClick={() => setShowRegister(!showRegister)}
                 aria-label="Toggle register"
-                className="flex -space-x-2">
-              <i className="ri-user-line text-2xl"></i>
-              <i className="ri-arrow-drop-down-fill text-2xl mt-2"></i>
+                className="flex -space-x-2"
+              >
+                <i className="ri-user-line text-2xl"></i>
+                <i className="ri-arrow-drop-down-fill text-2xl mt-2"></i>
               </button>
-              {showRegister && <div className="bg-white rounded-sm shadow-lg absolute p-3">
-                <Link to='/login' onClick={() => setShowRegister(!showRegister) }>Login</Link><br></br>
-                <Link to='/signup' onClick={() => setShowRegister(!showRegister) }>Register</Link>
-                </div>}
+              {showRegister && !user && (
+                <div
+                  className="bg-white rounded-sm shadow-lg absolute p-3 -mt-3"
+                  onMouseEnter={() => setShowRegister(true)}
+                  onMouseLeave={() => setShowRegister(false)}
+                >
+                  <Link
+                    to="/login"
+                    onClick={() => setShowRegister(!showRegister)}
+                  >
+                    Login
+                  </Link>
+                  <br />
+                  <Link
+                    to="/signup"
+                    onClick={() => setShowRegister(!showRegister)}
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
 
-             
+              {/* Show logout button if the user is logged in */}
+              {showRegister && user && (
+                <div
+                  className="bg-white rounded-sm shadow-lg absolute p-3 -mt-3"
+                  onMouseEnter={() => setShowRegister(true)}
+                  onMouseLeave={() => setShowRegister(false)}
+                >
+                  <button onClick={() => logOut()}>Logout</button>
+                </div>
+              )}
             </div>
             <div className="menu mt-1">
               {/* Toggle between menu and cross icons */}
