@@ -10,7 +10,7 @@ const Navbar = () => {
   return (
     <div>
       <header>
-        <nav className="container mx-auto items-center px-4 py-4 grid grid-cols-12">
+        <nav className="container mx-auto items-center px-8 py-4  grid grid-cols-12">
           {/* Logo Section */}
           <div className="logo flex justify-start md:col-span-3 col-span-6">
             <span>
