@@ -3,10 +3,12 @@ const About = () => {
   const { about_img } = assets;
   return (
     <div className="About container mx-auto px-4 md:px-[7vw]">
-      <div className="About__heading my-8 ">
+      <div className="About__heading my-8 flex justify-center space-x-2 ">
         <h1 className="font-[500] text-center text-2xl text-gray-600">
-          ABOUT US
+          ABOUT
         </h1>
+        <p className="text-black text-2xl">US</p>
+        <p className="w-8 sm:w-12 h-[1px] sm:h-[2px] mt-4 mx-2 bg-gray-700"></p>
       </div>
 
       <div className="About__main-content grid grid-col-1 md:grid-cols-12 gap-8">

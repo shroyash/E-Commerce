@@ -3,7 +3,7 @@ import { assets } from "../Assests/assets";
 const Contact = () => {
   const { contact_img} = assets;
   return (
-    <div className="contact">
+    <div className="contact container mx-aut0 px-4">
       <div className="contact__main-heading flex mx-2 justify-center my-12 space-x-1">
         <h1 className="text-gray-500 font-[500] text-2xl">CONTACT</h1>
         <p className="text-black text-2xl">US</p>
