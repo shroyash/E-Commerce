@@ -5,6 +5,7 @@ import Card from "../Pages/Card"
 import Contact from "../Pages/Contact"
 import Login from "../Pages/Login"
 import SignUp from "../Pages/SignUp"
+import Shop from "../Pages/Shop"
 
 
 const Router = () => {
@@ -17,6 +18,7 @@ const Router = () => {
             <Route path="/contact" element={<Contact/>}/>
             <Route path="/login" element={<Login/>}/>
             <Route path="/signup" element={<SignUp/>}/>
+            <Route path="/shop" element={<Shop/>}/>
         </Routes>
       
     </div>
