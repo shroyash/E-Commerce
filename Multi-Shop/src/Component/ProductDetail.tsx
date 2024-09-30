@@ -1,41 +1,168 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { ProductType } from "../Types/ProductType";
+import { products } from "../Assests/assets";
+import ProductList from "./ProductList";
 
 const ProductDetail = () => {
+  const { id } = useParams<{ id: string }>();
+  const [product, setProduct] = useState<ProductType | null>(null);
+  const [description, setDescription] = useState(true);
+  const [review, setReview] = useState(false);
+  const [reviewText, setReviewText] = useState(""); // State for review input
+  const [submittedReviews, setSubmittedReviews] = useState<string[]>([]); // State to hold submitted reviews
+  const [imgIndex,setImgIndex] = useState<number>(0)
+  const [relatedProduct,setRelateProduct] = useState<ProductType[] | null >(null)
+
+  const handleDes = () => {
+    setReview(false);
+    setDescription(true);
+  };
+
+  const handleRev = () => {
+    setDescription(false);
+    setReview(true);
+  };
+
+  const handleReviewChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setReviewText(e.target.value);
+  };
+
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (reviewText.trim()) {
+      setSubmittedReviews([...submittedReviews, reviewText]);
+      setReviewText(""); // Clear the input after submission
+    }
+  };
+
+  useEffect(() => {
+    const foundProduct = products.find((p) => p._id === id);
+    const foundProductCategories = foundProduct?.category;
+    const foundProductSubCategories = foundProduct?.subCategory;
+    const relatedItem = products.filter((p) => p.category === foundProductCategories && p.subCategory === foundProductSubCategories);
+
+    if(relatedItem){
+      setRelateProduct(relatedItem);
+    }
+    
+    if (foundProduct) {
+      setProduct(foundProduct);
+    }
+  
+  }, [id]);
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
-      <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100">
+      <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100 container mx-auto px-4 md:px-[7vw]">
         <div className="flex gap-12 sm:gap-12 flex-col sm:flex-row">
           <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row">
-            <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full">
-              <img
-                src="https://raw.githubusercontent.com/avinashdm/gs-images/main/forever/p_img14.png"
-                className="w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer"
-                alt="Product Thumbnail"
-              />
+            <div className="flex sm:flex-col overflow-x-auto justify-between sm:justify-normal sm:w-[18.7%] w-full">
+              {product.image.map((img, i) => (
+                <button onClick={() => setImgIndex(i)}>
+                  <img
+                  key={i}
+                  src={img}
+                  className="w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer"
+                  alt={`Product Thumbnail ${i + 1}`}
+                />
+                </button> 
+              ))}
             </div>
+
             <div className="w-full sm:w-[80%]">
               <img
                 className="w-full h-auto"
-                src="https://raw.githubusercontent.com/avinashdm/gs-images/main/forever/p_img14.png"
+                src={product.image[imgIndex]}
                 alt="Product Main Image"
               />
             </div>
           </div>
           <div className="flex-1">
-            <h1 className="font-medium text-2xl mt-2">Boy Round Neck Pure Cotton T-shirt</h1>
-            <div className="flex items-center gap-1 mt-2">
-              {/* Stars - You can dynamically generate these */}
-              {[...Array(5)].map((_, index) => (
-                <img
-                  key={index}
-                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAYAAAAv3j5gAAAACXBIWXMAABCcAAAQnAEmzTo0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAHESURBVHgBtVVNTsJQEP6mgmtuIO5cGC0nEE/g74KdeARPIDdQTqBLEwXhBnACiBDjjnIDgiuBvvFRrOnPezhN5EtI6XSmX2b6ffMIGcGXbhmKr0CqTY1BS1pHyAi+OBjpS1H/JvCdXWr1J5I6BxkQdLMiWaKA3MKV1mYiAuuRRaGcEwiRjQhcjt0SqhBCTJQYW4gCX+6XJfXyjpJjCyEcn0h1fOoWsKV6SHe0hEh9AdGvN+xUrs60K4zh6Vd17Czac0HexQFjs5iE38jDJsEhUX52vDEyRh9qdhwTA5/v34KcGv4LzPfUHNws/6ZUF/iCnQeYFSYk0NNhrtLroBuGjPLmyl4R8/ydfnyK7Cwd+J9n1PJicl/ro8imFnLAo+bbrumR80eh6AiQwNoRV1w9PjVCVvBWkZq9cTJs72iuxEdAHH7VFLUTsfwIiIESR8k6omBstt2mvQF/UQKrGsxMZT4v7SSjOWOuaWxpb/S157pGz5G/tEU9GrKMLukf7Q01LUUNGGS9DDur9cWPifyU/8wdQeFHkFreqkaNYR0W0NOHpy/Xen15kfWVsoV9M3zlD5Hzx/T83ocQq42yfQR/2k5uhm9CG7C+Nfr7TwAAAABJRU5ErkJggg=="
-                  alt="Star"
-                  className="w-3.5"
-                />
-              ))}
-              <p className="pl-2">(122)</p>
+            <h1 className="font-medium text-2xl mt-2">{product.name}</h1>
+            <p className="my-6 font-bold text-[1.6em]">
+              ${product.price.toFixed(2)}
+            </p>
+            <p className="text-gray-600 font-[500]">{product.description}</p>
+            <h2 className="font-[500] mt-6">Select Sizes</h2>
+            <div className="sizes flex space-x-3 my-4">
+              <button className="border py-2 px-4 bg-gray-100">S</button>
+              <button className="border py-2 px-4 bg-gray-100">M</button>
+              <button className="border py-2 px-4 bg-gray-100">XL</button>
+              <button className="border py-2 px-4 bg-gray-100">XXL</button>
             </div>
+            <button className="bg-black text-white px-8 py-3 text-sm my-4 active:bg-gray-700">
+              ADD TO CART
+            </button>
+            <hr className="mt-4" />
+            <p className="text-[0.9em] text-gray-500 mt-5">
+              100% Original product.
+              <br />
+              Cash on delivery is available on this product.
+              <br />
+              Easy return and exchange policy within 7 days.
+            </p>
           </div>
         </div>
+        <div className="flex mt-24">
+          <h5
+            className="border border-gray-500 px-4 py-2 font-bold cursor-pointer"
+            onClick={handleDes}
+          >
+            Description
+          </h5>
+          <h5
+            className="border border-gray-500 px-4 py-2 font-bold cursor-pointer"
+            onClick={handleRev}
+          >
+            Reviews
+          </h5>
+        </div>
+        {description && (
+          <p className="text-gray-500 p-4">
+            An e-commerce website is an online platform that facilitates the
+            buying and selling of products or services over the internet...
+          </p>
+        )}
+        {review && (
+          <div className="p-4">
+            <h3 className="font-bold">Reviews</h3>
+            <form onSubmit={handleReviewSubmit} className="my-4">
+              <textarea
+                value={reviewText}
+                onChange={handleReviewChange}
+                placeholder="Write your review here..."
+                className="border rounded-md p-2 w-full h-24"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-black text-white px-4 py-2 mt-2"
+              >
+                Submit Review
+              </button>
+            </form>
+            <div>
+              {submittedReviews.map((review, index) => (
+                <div key={index} className="border-b my-2 pb-2">
+                  <p>{review}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        <div className="relatedProduct">
+          <div className="main-heading mt-24 text-[1.7em] text-gray-500 text-center mb-8">
+            <h1>RELATED PRODUCTS__</h1>
+
+          </div>
+        {relatedProduct && <ProductList selectedProduct={relatedProduct}/>}
+
+      </div>
       </div>
     </div>
   );
