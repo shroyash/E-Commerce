@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext/AuthContexts";
+import { useAppSelector } from "../AppHook/AppHook";
 
 const Navbar = () => {
   const [showNavbar, setShowNavbar] = useState(false);
@@ -9,6 +10,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { logOut, user } = useAuth();
   const navigate = useNavigate();
+  const qty = useAppSelector((state) => state.product.allQty);
 
   const handleChange = (e: any) => {
     let search = e.target.value;
@@ -100,10 +102,12 @@ const Navbar = () => {
           </div>
 
           <div className="nav__shopping-card cursor-pointer relative mx-2">
+            <NavLink to='/cart'>
             <i className="ri-shopping-cart-2-fill text-2xl"></i>
             <span className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full text-xs px-2 py-1">
-              0
+              {qty}
             </span>
+            </NavLink>
           </div>
 
           <div className="nav__user-profile cursor-pointer">

@@ -9,11 +9,14 @@ import { LatestSellingProvider } from "./LatestSellingContext/LatestSellingConte
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { store } from "./Store/Store.ts";
+import { Provider } from 'react-redux'
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <Provider store={store}>
     <Router>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
@@ -24,5 +27,6 @@ createRoot(document.getElementById("root")!).render(
         </AuthProvider>
       </QueryClientProvider>
     </Router>
+    </Provider>
   </StrictMode>
 );

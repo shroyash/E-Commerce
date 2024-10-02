@@ -9,6 +9,8 @@ export interface ProductType {
     sizes: string[];
     date: number;
     bestseller: boolean;
+    qty?: number;
+    size?:string;
   }
 
 
