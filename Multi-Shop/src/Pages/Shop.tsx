@@ -2,82 +2,117 @@ import { useEffect, useState } from "react";
 import ProductList from "../Component/ProductList";
 import { products } from "../Assests/assets";
 import { ProductType } from "../Types/ProductType";
+import { useAppSelector } from "../AppHook/AppHook";
+
+type Category = 'Men' | 'Women' | 'Kids';
+type Type = 'Topwear' | 'Bottomwear' | 'Winterwear';
+
+interface Filters {
+  category: Record<Category, boolean>;
+  type: Record<Type, boolean>;
+}
 
 const Shop = () => {
-  const [isMenSelected, setIsMenSelected] = useState(false);
-  const [isWomenSelected, setIsWomenSelected] = useState(false);
-  const [isKidsSelected, setIsKidsSelected] = useState(false);
-  const [isTopwearSelected, setIsTopwearSelected] = useState(false);
-  const [isBottomwearSelected, setIsBottomwearSelected] = useState(false);
-  const [isWinterwearSelected, setIsWinterwearSelected] = useState(false);
+  const [filters, setFilters] = useState<Filters>({
+    category: {
+      Men: false,
+      Women: false,
+      Kids: false,
+    },
+    type: {
+      Topwear: false,
+      Bottomwear: false,
+      Winterwear: false,
+    },
+  });
+
   const [selectedProducts, setSelectedProducts] = useState<ProductType[]>(products);
   const [filterDropDown, setFilterDropDown] = useState(true);
+  const searchProduct = useAppSelector((state) => state.product.searchProduct);
 
   // Filter products based on selected categories and types
   const filterProducts = () => {
-    let filteredProducts = products;
+    let filteredProducts = products.filter(item => {
+      const isCategorySelected =
+        filters.category.Men && item.category === "Men" ||
+        filters.category.Women && item.category === "Women" ||
+        filters.category.Kids && item.category === "Kids";
 
-    // Filter by categories
-    if (isMenSelected) {
-      filteredProducts = filteredProducts.filter(item => item.category === "Men");
-    } else if (isWomenSelected) {
-      filteredProducts = filteredProducts.filter(item => item.category === "Women");
-    } else if (isKidsSelected) {
-      filteredProducts = filteredProducts.filter(item => item.category === "Kids");
-    }
+      const isTypeSelected =
+        filters.type.Topwear && item.subCategory === "Topwear" ||
+        filters.type.Bottomwear && item.subCategory === "Bottomwear" ||
+        filters.type.Winterwear && item.subCategory === "Winterwear";
 
-    // Filter by types
-    if (isTopwearSelected) {
-      filteredProducts = filteredProducts.filter(item => item.subCategory === "Topwear");
-    }
-    if (isBottomwearSelected) {
-      filteredProducts = filteredProducts.filter(item => item.subCategory === "Bottomwear");
-    }
-    if (isWinterwearSelected) {
-      filteredProducts = filteredProducts.filter(item => item.subCategory === "Winterwear");
+      return (isCategorySelected || Object.values(filters.category).every(value => !value)) &&
+             (isTypeSelected || Object.values(filters.type).every(value => !value));
+    });
+
+    if (searchProduct) {
+      filteredProducts = filteredProducts.filter((item) =>
+        item.name.toLowerCase().includes(searchProduct.toLowerCase()) || 
+        item.category.toLowerCase().includes(searchProduct.toLowerCase()) ||
+        item.subCategory.toLowerCase().includes(searchProduct.toLowerCase())
+      );
     }
 
     setSelectedProducts(filteredProducts);
   };
 
+  const handleChangeRelevent = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const sortValue = e.target.value;
+    
+    let sortedProducts = [...selectedProducts]; // Clone the current selected products to sort
+
+    if (sortValue === "low to high") {
+      sortedProducts.sort((a, b) => a.price - b.price); // Sort by price low to high
+    } else if (sortValue === "high to low") {
+      sortedProducts.sort((a, b) => b.price - a.price); // Sort by price high to low
+    }
+
+    setSelectedProducts(sortedProducts); // Update the state with the sorted products
+  };
+
   // Use effect to trigger product filtering when state changes
   useEffect(() => {
     filterProducts();
-  }, [isMenSelected, isWomenSelected, isKidsSelected, isTopwearSelected, isBottomwearSelected, isWinterwearSelected]);
+  }, [filters, searchProduct]);
 
   // Handle category selection and deselection
-  const handleCategoryChange = (category: string) => {
-    if (category === "Men") {
-      setIsMenSelected(!isMenSelected);
-      setIsWomenSelected(false); // Deselect Women
-      setIsKidsSelected(false);  // Deselect Kids
-    } else if (category === "Women") {
-      setIsWomenSelected(!isWomenSelected);
-      setIsMenSelected(false);  // Deselect Men
-      setIsKidsSelected(false); // Deselect Kids
-    } else if (category === "Kids") {
-      setIsKidsSelected(!isKidsSelected);
-      setIsMenSelected(false);  // Deselect Men
-      setIsWomenSelected(false); // Deselect Women
-    }
+  const handleCategoryChange = (category: Category) => {
+    setFilters(prev => ({
+      ...prev,
+      category: {
+        ...prev.category,
+        [category]: !prev.category[category],
+      }
+    }));
   };
 
   // Handle type selection and deselection
-  const handleTypeChange = (type: string) => {
-    if (type === "Topwear") {
-      setIsTopwearSelected(!isTopwearSelected);
-      setIsBottomwearSelected(false); // Deselect Bottomwear
-      setIsWinterwearSelected(false); // Deselect Winterwear
-    } else if (type === "Bottomwear") {
-      setIsBottomwearSelected(!isBottomwearSelected);
-      setIsTopwearSelected(false); // Deselect Topwear
-      setIsWinterwearSelected(false); // Deselect Winterwear
-    } else if (type === "Winterwear") {
-      setIsWinterwearSelected(!isWinterwearSelected);
-      setIsTopwearSelected(false);  // Deselect Topwear
-      setIsBottomwearSelected(false); // Deselect Bottomwear
-    }
+  const handleTypeChange = (type: Type) => {
+    setFilters(prev => ({
+      ...prev,
+      type: {
+        ...prev.type,
+        [type]: !prev.type[type],
+      }
+    }));
   };
+
+  const resetFilters = () => {
+    setFilters({
+      category: { Men: false, Women: false, Kids: false },
+      type: { Topwear: false, Bottomwear: false, Winterwear: false },
+    });
+  };
+
+  if (!selectedProducts.length) {
+    return (
+      <div className="flex justify-center items-center">
+        <h2 className="text-3xl font-bold">No Products Found</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="shop mt-5 container mx-auto px-4 md:px-[7vw] grid grid-cols-12 md:grid-cols-12 gap-8 md:mt-10">
@@ -98,33 +133,17 @@ const Shop = () => {
               <div className="main-heading">
                 <h2 className="text-1 mx-2 mb-2">CATEGORIES</h2>
               </div>
-              <div className="checkbox flex">
-                <input
-                  type="checkbox"
-                  checked={isMenSelected}
-                  onChange={() => handleCategoryChange("Men")}
-                  className="text-gray-500 mx-2"
-                />
-                <p>Men</p>
-              </div>
-              <div className="checkbox flex">
-                <input
-                  type="checkbox"
-                  checked={isWomenSelected}
-                  onChange={() => handleCategoryChange("Women")}
-                  className="text-gray-500 mx-2"
-                />
-                <p>Women</p>
-              </div>
-              <div className="checkbox flex">
-                <input
-                  type="checkbox"
-                  checked={isKidsSelected}
-                  onChange={() => handleCategoryChange("Kids")}
-                  className="text-gray-500 mx-2"
-                />
-                <p>Kids</p>
-              </div>
+              {Object.keys(filters.category).map(category => (
+                <div className="checkbox flex" key={category}>
+                  <input
+                    type="checkbox"
+                    checked={filters.category[category as Category]} 
+                    onChange={() => handleCategoryChange(category as Category)} 
+                    className="text-gray-500 mx-2"
+                  />
+                  <p>{category}</p>
+                </div>
+              ))}
             </div>
 
             {/* Type Section */}
@@ -132,39 +151,27 @@ const Shop = () => {
               <div className="main-heading">
                 <h2 className="text-1 mx-2 mb-2">TYPES</h2>
               </div>
-              <div className="checkbox flex">
-                <input
-                  type="checkbox"
-                  checked={isTopwearSelected}
-                  onChange={() => handleTypeChange("Topwear")}
-                  className="text-gray-500 mx-2"
-                />
-                <p>Topwear</p>
-              </div>
-              <div className="checkbox flex">
-                <input
-                  type="checkbox"
-                  checked={isBottomwearSelected}
-                  onChange={() => handleTypeChange("Bottomwear")}
-                  className="text-gray-500 mx-2"
-                />
-                <p>Bottomwear</p>
-              </div>
-              <div className="checkbox flex">
-                <input
-                  type="checkbox"
-                  checked={isWinterwearSelected}
-                  onChange={() => handleTypeChange("Winterwear")}
-                  className="text-gray-500 mx-2"
-                />
-                <p>Winterwear</p>
-              </div>
+              {Object.keys(filters.type).map(type => (
+                <div className="checkbox flex" key={type}>
+                  <input
+                    type="checkbox"
+                    checked={filters.type[type as Type]}
+                    onChange={() => handleTypeChange(type as Type)}
+                    className="text-gray-500 mx-2"
+                  />
+                  <p>{type}</p>
+                </div>
+              ))}
             </div>
+
+            <button onClick={resetFilters} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
+              Reset Filters
+            </button>
           </>
         )}
       </div>
 
-      {/* All Products Section */}
+    
       <div className="shop__AllCollection col-span-12 md:col-span-9">
         <div className="flex justify-between">
           <div className="maintext mt-6 md:mt-0">
@@ -172,10 +179,10 @@ const Shop = () => {
             <p className="w-8 sm:w-12 h-[1px] sm:h-[2px] mt-4 mx-2 bg-gray-700"></p>
           </div>
           <div className="sort mt-6 md:mt-0">
-            <select name="" id="" className="text-xl">
-              <option value="" className="text-xs">Sort By: Relevant</option>
-              <option value="" className="text-xs">Sort By: Low to High</option>
-              <option value="" className="text-xs">Sort By: High to Low</option>
+            <select className="text-xl" onChange={handleChangeRelevent}>
+              <option value="">Sort By: Relevant</option>
+              <option value="low to high">Sort By: Low to High</option>
+              <option value="high to low">Sort By: High to Low</option>
             </select>
           </div>
         </div>

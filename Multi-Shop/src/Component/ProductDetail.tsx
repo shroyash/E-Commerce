@@ -4,42 +4,29 @@ import { ProductType } from "../Types/ProductType";
 import { products } from "../Assests/assets";
 import ProductList from "./ProductList";
 import { useAppDispatch } from "../AppHook/AppHook";
-import { addToCart,addAllCartQty } from "../ProductSlice/ProductSlice";
+import { addToCart, addAllCartQty } from "../ProductSlice/ProductSlice";
 import { toast } from "react-toastify";
+import Reveiw from "./Reveiw";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<ProductType | null>(null);
   const [description, setDescription] = useState(true);
   const [review, setReview] = useState(false);
-  const [reviewText, setReviewText] = useState("");
-  const [submittedReviews, setSubmittedReviews] = useState<string[]>([]);
   const [imgIndex, setImgIndex] = useState<number>(0);
   const [relatedProduct, setRelatedProduct] = useState<ProductType[] | null>(null);
-  const [selectedSize,setSelectedSize] = useState<string | null>(null)
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const dispatch = useAppDispatch();
 
-  const handleDes = () => {
+  const handleShowDes = () => {
     setReview(false);
     setDescription(true);
   };
 
-  const handleRev = () => {
+  const handleShowRev = () => {
     setDescription(false);
     setReview(true);
-  };
-
-  const handleReviewChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReviewText(e.target.value);
-  };
-
-  const handleReviewSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (reviewText.trim()) {
-      setSubmittedReviews([...submittedReviews, reviewText]);
-      setReviewText(""); // Clear the input after submission
-    }
   };
 
   useEffect(() => {
@@ -61,18 +48,18 @@ const ProductDetail = () => {
     }
   }, [id]);
 
-  const handleSelectSize = (size:string) => {
+  const handleSelectSize = (size: string) => {
     setSelectedSize(size);
     toast.success("Size Selected");
-  }
+  };
 
   const handleAddProduct = () => {
     if (product && selectedSize) {
-      dispatch(addToCart({ ...product, qty: 1,size:selectedSize }));
+      dispatch(addToCart({ ...product, qty: 1, size: selectedSize }));
       dispatch(addAllCartQty());
       toast.success("Product Added To Cart");
-    }else{
-      toast.error("Please Select The Size")
+    } else {
+      toast.error("Please Select The Size");
     }
   };
 
@@ -113,10 +100,46 @@ const ProductDetail = () => {
             <p className="text-gray-600 font-[500]">{product.description}</p>
             <h2 className="font-[500] mt-6">Select Sizes</h2>
             <div className="sizes flex space-x-3 my-4">
-              <button className="border py-2 px-4 bg-gray-100 hover:bg-red-500 bg:text-white" onClick={() => handleSelectSize("S")} >S</button>
-              <button className="border py-2 px-4 bg-gray-100  hover:bg-red-500 bg:text-white"  onClick={() => handleSelectSize("M")} >M</button>
-              <button className="border py-2 px-4 bg-gray-100  hover:bg-red-500 bg:text-white" onClick={() => handleSelectSize("XL")} >XL</button>
-              <button className="border py-2 px-4 bg-gray-100  hover:bg-red-500 bg:text-white" onClick={() => handleSelectSize("XXL")} >XXL</button>
+              <button
+                className={`border py-2 px-4 ${
+                  selectedSize === "S"
+                    ? "bg-red-500 text-white"
+                    : "bg-gray-100 text-black"
+                } `}
+                onClick={() => handleSelectSize("S")}
+              >
+                S
+              </button>
+              <button
+                className={`border py-2 px-4 ${
+                  selectedSize === "M"
+                    ? "bg-red-500 text-white"
+                    : "bg-gray-100 text-black"
+                }`}
+                onClick={() => handleSelectSize("M")}
+              >
+                M
+              </button>
+              <button
+                className={`border py-2 px-4 ${
+                  selectedSize === "XL"
+                    ? "bg-red-500 text-white"
+                    : "bg-gray-100 text-black"
+                }`}
+                onClick={() => handleSelectSize("XL")}
+              >
+                XL
+              </button>
+              <button
+                className={`border py-2 px-4 ${
+                  selectedSize === "XXL"
+                    ? "bg-red-500 text-white"
+                    : "bg-gray-100 text-black"
+                } `}
+                onClick={() => handleSelectSize("XXL")}
+              >
+                XXL
+              </button>
             </div>
             <button
               className="bg-black text-white px-8 py-3 text-sm my-4 active:bg-gray-700"
@@ -137,49 +160,40 @@ const ProductDetail = () => {
         <div className="flex mt-24">
           <h5
             className="border border-gray-500 px-4 py-2 font-bold cursor-pointer"
-            onClick={handleDes}
+            onClick={handleShowDes}
           >
             Description
           </h5>
           <h5
             className="border border-gray-500 px-4 py-2 font-bold cursor-pointer"
-            onClick={handleRev}
+            onClick={handleShowRev}
           >
             Reviews
           </h5>
         </div>
         {description && (
-          <p className="text-gray-500 p-4">
+          <>
+           <p className="text-gray-500 p-4">
             An e-commerce website is an online platform that facilitates the
-            buying and selling of products or services over the internet...
-          </p>
+            buying and selling of products or services over the internet. It
+            serves as a virtual marketplace where businesses and individuals can
+            showcase their products, interact with customers, and conduct
+            transactions without the need for a physical presence. E-commerce
+            websites have gained immense popularity due to their convenience,
+            accessibility, and the global reach they offer.
+            </p>
+
+            <p className="mt-2"> E-commerce websites typically display products or services along
+            with detailed descriptions, images, prices, and any available
+            variations (e.g., sizes, colors). Each product usually has its own
+            dedicated page with relevant information.</p>
+          </>
+      
         )}
         {review && (
-          <div className="p-4">
-            <h3 className="font-bold">Reviews</h3>
-            <form onSubmit={handleReviewSubmit} className="my-4">
-              <textarea
-                value={reviewText}
-                onChange={handleReviewChange}
-                placeholder="Write your review here..."
-                className="border rounded-md p-2 w-full h-24"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-black text-white px-4 py-2 mt-2"
-              >
-                Submit Review
-              </button>
-            </form>
-            <div>
-              {submittedReviews.map((review, index) => (
-                <div key={index} className="border-b my-2 pb-2">
-                  <p>{review}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+        <>
+        <Reveiw/>
+        </>
         )}
         <div className="relatedProduct">
           <div className="main-heading mt-24 text-[1.7em] text-gray-500 text-center mb-8">

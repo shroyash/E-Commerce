@@ -2,10 +2,12 @@ import HeroBanner from "../Assests/herobanner.jpg";
 import ProductList from "../Component/ProductList";
 import { useLatestSelling } from "../LatestSellingContext/LatestSellingContext";
 import { assets } from "../Assests/assets";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const { latestProducts, sellingProducts } = useLatestSelling();
   const { exchange_icon, support_img, quality_icon } = assets;
+  const navigate = useNavigate();
   return (
     <div>
       <section className="heroBanner container mx-auto px-4 md:px-[7vw] grid grid-cols-1 md:grid-cols-12 mb-24">
@@ -32,7 +34,7 @@ const Home = () => {
             </p>
           </div>
           <div className="heroBanner__shop-btn my-8">
-            <button className="rounded-full text-white px-5 py-2 bg-red-500">
+            <button className="rounded-full text-white px-5 py-2 bg-red-500" onClick={() => navigate('/shop')} >
               Shop
             </button>
           </div>

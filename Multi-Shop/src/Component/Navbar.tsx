@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../AuthContext/AuthContexts";
-import { useAppSelector } from "../AppHook/AppHook";
+import { useAppSelector, useAppDispatch } from "../AppHook/AppHook";
+import { searchProduct } from "../ProductSlice/ProductSlice";
 
 const Navbar = () => {
   const [showNavbar, setShowNavbar] = useState(false);
@@ -10,15 +11,21 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { logOut, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation(); // To detect route changes
   const qty = useAppSelector((state) => state.product.allQty);
+  const dispatch = useAppDispatch();
 
-  const handleChange = (e: any) => {
-    let search = e.target.value;
-    setSearchQuery(search);
-    if (search.trim()) {
-      navigate("/shop", { state: search });
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    dispatch(searchProduct(searchQuery));
   };
+
+  useEffect(() => {
+    if (location.pathname !== "/shop") {
+      setShowSearch(false);
+    }
+  }, [location.pathname]);
+  
 
   return (
     <header>
@@ -96,17 +103,23 @@ const Navbar = () => {
         {/* Icons Section */}
         <div className="nav__icon flex space-x-2 justify-end col-span-6 md:col-span-3">
           <div className="search-icon text-2xl">
-            <button onClick={() => setShowSearch(true)} aria-label="Search">
+            <button
+              onClick={() => {
+                setShowSearch(true);
+                navigate("/shop");
+              }}
+              aria-label="Search"
+            >
               <i className="ri-search-line"></i>
             </button>
           </div>
 
           <div className="nav__shopping-card cursor-pointer relative mx-2">
-            <NavLink to='/cart'>
-            <i className="ri-shopping-cart-2-fill text-2xl"></i>
-            <span className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full text-xs px-2 py-1">
-              {qty}
-            </span>
+            <NavLink to="/cart">
+              <i className="ri-shopping-cart-2-fill text-2xl"></i>
+              <span className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full text-xs px-2 py-1">
+                {qty}
+              </span>
             </NavLink>
           </div>
 
