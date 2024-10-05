@@ -1,5 +1,5 @@
 import { useAppSelector, useAppDispatch } from "../AppHook/AppHook";
-import { removeFromCart } from "../ProductSlice/ProductSlice";
+import { removeFromCart, updateQuantity } from "../ProductSlice/ProductSlice";
 
 const ProductCart = () => {
   const addedProduct = useAppSelector((state) => state.product.items);
@@ -39,14 +39,18 @@ const ProductCart = () => {
               type="number"
               min="1"
               value={item.qty}
-  
+              onChange={(e) => {
+                const newQty = Number(e.target.value);
+                if (newQty > 0) {
+                  dispatch(updateQuantity({ id: item._id, size: item.size ?? '', qty: newQty }));
+                }
+              }}
             />
             <div className="delete-item">
               <button
                 className="p-2 bg-red-600 text-white rounded-md"
                 onClick={() => {
                   if (item.size) {
-                    // Check if size is defined
                     dispatch(removeFromCart({ id: item._id, size: item.size }));
                   }
                 }}

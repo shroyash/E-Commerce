@@ -6,6 +6,7 @@ export const store = configureStore({
   reducer: {
     product: productReducer, 
   },
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 
