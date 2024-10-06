@@ -1,11 +1,14 @@
+
 import { useAppSelector, useAppDispatch } from "../AppHook/AppHook";
+import TotalCart from "../Component/TotalCart";
 import { removeFromCart, updateQuantity } from "../ProductSlice/ProductSlice";
+import { useNavigate } from "react-router-dom";
 
 const ProductCart = () => {
   const addedProduct = useAppSelector((state) => state.product.items);
-  const subTotal = useAppSelector((state) => state.product.subTotal);
-  const total = useAppSelector((state) => state.product.total);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
 
   return (
     <div className="container mx-auto px-4 py-4 md:px-[7vw]">
@@ -65,40 +68,15 @@ const ProductCart = () => {
 
         <div className="flex justify-end my-20">
           <div className="w-full sm:w-[450px]">
-            <div className="w-full">
-              <div className="text-2xl">
-                <div className="inline-flex gap-2 items-center mb-3">
-                  <p className="text-gray-500">
-                    CART <span className="text-gray-700 font-medium">TOTALS</span>
-                  </p>
-                  <p className="w-8 sm:w-12 h-[1px] sm:h-[2px] bg-gray-700"></p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2 mt-2 text-sm">
-                <div className="flex justify-between">
-                  <p>Subtotal</p>
-                  <p>${subTotal.toFixed(2)}</p> {/* Displaying dynamic subtotal */}
-                </div>
-                <hr />
-                <div className="flex justify-between">
-                  <p>Shipping Fee</p>
-                  <p>$10</p>
-                </div>
-                <hr />
-                <div className="flex justify-between">
-                  <b>Total</b>
-                  <b>${total.toFixed(2)}</b> {/* Displaying dynamic total */}
-                </div>
-              </div>
-            </div>
+            <TotalCart/>
             <div className="w-full text-end">
-              <button className="bg-black text-white text-sm my-8 px-8 py-3">
+            <button className="bg-black text-white text-sm my-8 px-8 py-3" onClick={() => navigate('/place-order')}>
                 PROCEED TO CHECKOUT
               </button>
             </div>
-          </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

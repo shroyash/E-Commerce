@@ -8,6 +8,7 @@ import SignUp from "../Pages/SignUp"
 import Shop from "../Pages/Shop"
 import ProductDetail from "../Component/ProductDetail"
 import ProductCart from "../Pages/ProductCart"
+import PlaceOrder from "../Pages/PlaceOrder"
 
 
 const Router = () => {
@@ -23,6 +24,7 @@ const Router = () => {
             <Route path="/signup" element={<SignUp/>}/>
             <Route path="/cart" element={<ProductCart/>}/>
             <Route path="/shop" element={<Shop/>}/>
+            <Route path="/place-order" element={<PlaceOrder/>}/>
         </Routes>
       
     </div>
