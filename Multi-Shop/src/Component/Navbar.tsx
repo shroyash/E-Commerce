@@ -3,6 +3,8 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../AuthContext/AuthContexts";
 import { useAppSelector, useAppDispatch } from "../AppHook/AppHook";
 import { searchProduct } from "../ProductSlice/ProductSlice";
+import { assets } from '../Assests/assets';
+import Profile from "./Profile";
 
 const Navbar = () => {
   const [showNavbar, setShowNavbar] = useState(false);
@@ -11,9 +13,20 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { logOut, user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation(); // To detect route changes
+  const location = useLocation(); 
   const qty = useAppSelector((state) => state.product.allQty);
   const dispatch = useAppDispatch();
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const profileIcon = assets.profile_icon;
+
+  const [loading, setLoading] = useState(true); // Add loading state
+
+  useEffect(() => {
+    // Simulate a delay in loading user profile data
+    if (user) {
+      setLoading(false); // When user data is available, stop loading
+    }
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -25,7 +38,6 @@ const Navbar = () => {
       setShowSearch(false);
     }
   }, [location.pathname]);
-  
 
   return (
     <header>
@@ -44,10 +56,7 @@ const Navbar = () => {
             showNavbar ? "translate-x-0" : "translate-x-full"
           } duration-300`}
         >
-          <button
-            onClick={() => setShowNavbar(!showNavbar)}
-            aria-label="Toggle menu"
-          >
+          <button onClick={() => setShowNavbar(!showNavbar)} aria-label="Toggle menu">
             <i className="ri-close-line text-white text-[1.4em] absolute top-2 right-2"></i>
           </button>
           <ul className="space-y-4 text-center mt-16">
@@ -129,7 +138,16 @@ const Navbar = () => {
               aria-label="Toggle register"
               className="flex items-center space-x-1"
             >
-              <i className="ri-user-line text-2xl"></i>
+              {/* Display loading spinner or profile icon */}
+              {loading ? (
+                <div className="spinner-border animate-spin inline-block w-5 h-5 border-4 rounded-full" role="status"></div>
+              ) : (
+                <img
+                  src={user?.photoURL ?? profileIcon}
+                  alt="Profile"
+                  className="w-5 h-6 rounded-full"
+                />
+              )}
               <i className="ri-arrow-drop-down-fill text-2xl"></i>
             </button>
 
@@ -140,7 +158,11 @@ const Navbar = () => {
                 onMouseLeave={() => setShowRegister(false)}
               >
                 {user ? (
-                  <button onClick={() => logOut()}>Logout</button>
+                  <>
+                    <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
+                    <br />
+                    <button onClick={() => logOut()}>Logout</button>
+                  </>
                 ) : (
                   <>
                     <Link
@@ -195,6 +217,14 @@ const Navbar = () => {
               <i className="ri-close-line text-2xl"></i>
             </button>
           </span>
+        </div>
+      )}
+      {showEditProfile && (
+        <div className="bg-white rounded-sm shadow-lg absolute top-34 right-0  p-3">
+          <button onClick={() => setShowEditProfile(false)} className="absolute right-0 top-0">
+            <i className="ri-close-line"></i>
+          </button>
+          <Profile />
         </div>
       )}
     </header>
