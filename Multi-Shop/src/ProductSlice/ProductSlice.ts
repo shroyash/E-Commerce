@@ -9,12 +9,22 @@ interface CartState {
   items: CartItem[];
   allQty: number;
   searchProduct: string;
+  subTotal: number;
+  total: number;
 }
 
 const initialState: CartState = {
   items: [],
   allQty: 0,
   searchProduct: "",
+  subTotal: 0,
+  total: 0,
+};
+
+// Helper function to recalculate subtotal and total
+const recalculateTotal = (state: CartState) => {
+  state.subTotal = state.items.reduce((total, item) => total + item.price, 0);
+  state.total = state.subTotal + 10; // Assuming a flat $10 shipping fee
 };
 
 const productSlice = createSlice({
@@ -25,7 +35,6 @@ const productSlice = createSlice({
       state.searchProduct = action.payload;
     },
 
-    // Update addAllCartQty
     addAllCartQty: (state) => {
       state.allQty = state.items.reduce((total, item) => total + item.qty, 0);
     },
@@ -36,12 +45,19 @@ const productSlice = createSlice({
       );
 
       if (itemIndex >= 0) {
+        // If item exists, increase the quantity and update the price
         state.items[itemIndex].qty += action.payload.qty;
+        state.items[itemIndex].price += action.payload.price;
       } else {
+        // If item does not exist, add it to the cart
         state.items.push(action.payload);
       }
-      // Update total quantity
+
+      // Update the total quantity of items in the cart
       state.allQty += action.payload.qty;
+      
+      // Recalculate subtotal and total
+      recalculateTotal(state);
     },
 
     removeFromCart: (state, action: PayloadAction<{ id: string; size: string }>) => {
@@ -51,21 +67,26 @@ const productSlice = createSlice({
 
       if (itemIndex >= 0) {
         const itemToRemove = state.items[itemIndex];
-        state.allQty -= itemToRemove.qty; // Update total quantity
+        
+        // Reduce total quantity by the quantity of the removed item
+        state.allQty -= itemToRemove.qty;
+
+        // Remove the item from the cart
         state.items.splice(itemIndex, 1);
       }
+
+      // Recalculate subtotal and total
+      recalculateTotal(state);
     },
 
     clearCart: (state) => {
       state.items = [];
       state.allQty = 0;
+      state.subTotal = 0;
+      state.total = 0;
     },
 
-    // New action to update the quantity
-    updateQuantity: (
-      state,
-      action: PayloadAction<{ id: string; size: string; qty: number }>
-    ) => {
+    updateQuantity: (state, action: PayloadAction<{ id: string; size: string; qty: number; price:number }>) => {
       const itemIndex = state.items.findIndex(
         (item) => item._id === action.payload.id && item.size === action.payload.size
       );
@@ -73,9 +94,22 @@ const productSlice = createSlice({
       if (itemIndex >= 0) {
         const oldQty = state.items[itemIndex].qty;
         const newQty = action.payload.qty;
+
+        // Calculate the price per item based on the current quantity
+        const pricePerItem = state.items[itemIndex].price / oldQty;
+
+        // Calculate the new price based on the updated quantity
+        const newPrice = newQty * pricePerItem;
+
+        // Update the quantity and price
+        state.items[itemIndex].qty = newQty;
+        state.items[itemIndex].price = newPrice;
+
+        // Update the total quantity
         state.allQty += newQty - oldQty;
 
-        state.items[itemIndex].qty = newQty;
+        // Recalculate subtotal and total
+        recalculateTotal(state);
       }
     },
   },
