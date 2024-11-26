@@ -106,7 +106,7 @@ const Signup = () => {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     <i
-                      className={`ri-${showPassword ? "eye-off" : "eye"}-line`}
+                      className={`ri-${showPassword ? "eye" : "eye-off"}-line`}
                     ></i>
                   </button>
                 </div>

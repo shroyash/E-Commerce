@@ -1,6 +1,7 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
 import { useAuth } from "../AuthContext/AuthContexts";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   type Inputs = {
@@ -80,7 +81,7 @@ const Login = () => {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     <i
-                      className={`ri-${showPassword ? "eye-off" : "eye"}-line`}
+                      className={`ri-${showPassword ? "eye" : "eye-off"}-line`}
                     ></i>
                   </button>
                 {errors.password && (
@@ -105,6 +106,10 @@ const Login = () => {
             <button className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-semibold transition duration-300">
               Login with Google
             </button>
+            <div  className="text-right text-blue-600">
+            <Link to ='/signup'>Register</Link>
+            </div>
+           
           </div>
         </div>
       )}

@@ -45,8 +45,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       // Show success message
-      toast.success("Sign-up successful! Welcome aboard!");
-      navigate('/login');
+      toast.success("Sign-up successful! Welcome!");
+      navigate('/home');
 
     } catch (error: any) {
       const errorMessage = getFirebaseErrorMessage(error.code);
